@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image
 
-def convert_to_8bit_art(img_array : np.ndarray, output_path : str, pixel_size : int = 8) -> int:
+def convert_to_8bit_art(img_array : np.ndarray, output_path : str, pixel_size : int = 16) -> int:
 
     try:
         image = Image.fromarray(img_array) # converte o np.array para imagem do PIL
@@ -29,4 +29,4 @@ if __name__ == "__main__":
     img = Image.open(img_path)
     img_array = np.array(img)
 
-    convert_to_8bit_art(img_array, "Cristo_8bits.png", 8)
+    convert_to_8bit_art(img_array, "Cristo_8bits.png", 16)
