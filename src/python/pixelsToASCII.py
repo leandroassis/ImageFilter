@@ -30,11 +30,11 @@ def convert_image_to_ascii(image : np.ndarray, output_path : str) -> int:
         print(f'Erro: {e}.')
         print('Erro ao converter a imagem para ASCII.')
         return 0
-
-    return 1
+    else:
+        return 1
 
 if __name__ == '__main__':
-    slice56 = Image.open('./sample/image_weighted_average_byhand.png')
+    slice56 = Image.open('./sample/CristoRedentor-4.jpeg')
     slice56 = np.array(slice56)
 
-    print(convert_image_to_ascii(slice56, 'slice56.txt'))
+    print(convert_image_to_ascii(slice56, 'Cristo_ASCII.txt'))
