@@ -4,12 +4,12 @@
 #include <Magick++.h>
 #include <string>
 #include <vector>
-
 #include "Pixel.h"
 
 using namespace std;
+using namespace Magick;
 
-class Imagem : public Magick::Image {
+class Imagem : public Image {
     private:
         string path;
         int altura, largura;

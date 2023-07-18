@@ -2,17 +2,19 @@ SRC = $(wildcard src/cpp/*.cpp)
 OBJ = $(SRC:.cpp=.o)
 
 PYTHON_INCLUDE = /usr/include/python3.10
-MAGICK++_INCLUDE = /usr/include/ImageMagick
+MAGICK++_INCLUDE = /usr/local/include/ImageMagick-7
+MAGICK++_LIB = Magick++-7.Q16HDRI
+MAGICK_LIB_PATH = /usr/local/lib
 
-CPPFLAGS = -Wall -std=c++11 -I$(MAGICK++_INCLUDE) -I$(PYTHON_INCLUDE)
+CPPFLAGS = -Wall -std=c++11 -I$(PYTHON_INCLUDE) -I$(MAGICK++_INCLUDE) -L$(MAGICK_LIB_PATH) -l$(MAGICK++_LIB)
 
-all: imageFilter
+all: morfeus
 
 %.o: %.cpp
 	g++ -c -o $@ $< $(CPPFLAGS)
 
-imageFilter: $(OBJ)
-	g++ -o $@ $^
+morfeus: $(OBJ)
+	g++ -o $@ $^ $(CPPFLAGS)
 
 clean:
-	rm -rf src/*.o ./imageFilter
+	rm -rf src/*.o ./morfeus

@@ -1,5 +1,5 @@
-#include <Magick++.h>
-#include <iostream> 
+#include <iostream>
+#include <ImageMagick-7/Magick++.h> 
 
 using namespace std; 
 using namespace Magick; 
@@ -14,7 +14,7 @@ int main(int argc,char **argv)
   Image image;
   try { 
     // Read a file into image object 
-    image.read( "logo:" );
+    image.read( "./sample/CristoRedentor-4.jpeg" );
 
     // Crop the image to specified size (width, height, xOffset, yOffset)
     image.crop( Geometry(100,100, 100, 100) );
