@@ -16,17 +16,15 @@ Funções em C++
 ### Instalação
 
 Execute `pip install -r requirements.txt` para instalar as dependências do projeto. 
-    
+
 Siga os passos a seguir para instalar o ImageMagick++7:
 
 ```sudo apt-get install -y libjpeg62-dev libjpg-dev libpng-dev
 sudo apt-get install -y libtiff-dev 
 
-wget https://www.imagemagick.org/download/ImageMagick.tar.gz 
+git submodule update --init 
 
-tar xvzf ImageMagick.tar.gz 
-
-cd ImageMagick/[version_number] 
+cd ImageMagick/[version_number] # atualmente 7.1.0
 
 ./configure --disable-shared
 
