@@ -12,8 +12,7 @@ class Pixel {
     public:
         // construtores e destrutores
         Pixel();
-        Pixel(int, int, int);
-        Pixel(int, int, int, int);
+        Pixel(int, int, int, int = 0);
         Pixel(Pixel &);
         ~Pixel();
 
@@ -31,6 +30,8 @@ class Pixel {
         // + para somar dois pixels
         // * para multiplicar um pixel por um inteiro
         Pixel& operator+(const Pixel&);
+        Pixel& operator+(int);
+        Pixel& operator*(const Pixel&);
         Pixel& operator*(int);
-        vector<int>& operator[](int);
+        int operator[](int);
 };

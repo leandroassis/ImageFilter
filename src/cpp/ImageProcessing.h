@@ -19,11 +19,8 @@ class ImageProcessing {
         vector<Pixel *> pixels;
         // numpy_array = NULL;
 
-        // transforma uma imagem em um numpy_array de pixels
         int vectorToArray();
-
-        int ppmToVector(ifstream *);
-
+        int ppmToVector();
 
     public:
         // construtores e destrutores
@@ -46,7 +43,7 @@ class ImageProcessing {
         int to_pixel(int = 16);
 
         // operações com imagens das funções em c++
-        int resize(int, int = NULL);
+        int resize(int = NULL, int = NULL);
         int compress();
         int filter(int, const ImageProcessing* = NULL);
         int convert(string = NULL);
@@ -60,5 +57,5 @@ class ImageProcessing {
         ImageProcessing& operator+=(Pixel);
         ImageProcessing& operator*=(const ImageProcessing&);
         ImageProcessing& operator*=(Pixel);
-        Pixel& operator[](int);
+        vector<Pixel>& operator[](int);
 };

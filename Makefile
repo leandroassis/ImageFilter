@@ -8,13 +8,13 @@ MAGICK_LIB_PATH = /usr/local/lib
 
 CPPFLAGS = -Wall -std=c++11 -I$(PYTHON_INCLUDE) -I$(MAGICK++_INCLUDE) -L$(MAGICK_LIB_PATH) -l$(MAGICK++_LIB)
 
-all: morfeus
+all: ImageProcessing
 
 %.o: %.cpp
 	g++ -c -o $@ $< $(CPPFLAGS)
 
-morfeus: $(OBJ)
+ImageProcessing: $(OBJ)
 	g++ -o $@ $^ $(CPPFLAGS)
 
 clean:
-	rm -rf src/*.o ./morfeus
+	rm -rf src/*.o ./ImageProcessing
