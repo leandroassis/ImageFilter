@@ -34,4 +34,5 @@ class Pixel {
         Pixel& operator*(Pixel&);
         Pixel& operator*(int);
         int operator[](int);
+        
 };

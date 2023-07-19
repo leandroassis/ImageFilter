@@ -16,7 +16,7 @@ class ImageProcessing {
 
         Image MagickImage;
 
-        vector<Pixel *> pixels;
+        vector<vector<Pixel *>> pixels;
         // numpy_array = NULL;
 
         int vectorToArray();
@@ -46,6 +46,8 @@ class ImageProcessing {
         int resize(int = NULL, int = NULL);
         int compress();
         int filter(int, const ImageProcessing* = NULL);
+        int grayscale();
+        int negative();
         int convert(string = NULL);
 
         // funções extras
@@ -54,8 +56,8 @@ class ImageProcessing {
         // operadores
         // += e *= para aplicar convolução e filtro
         // [] para acessar um pixel no vetor de pixels
-        ImageProcessing& operator+=(Pixel);
-        ImageProcessing& operator*=(const ImageProcessing&);
-        ImageProcessing& operator*=(Pixel);
+        ImageProcessing& operator+=(Pixel); // filtro linear de matiz
+        ImageProcessing& operator*=(const ImageProcessing&); // convolução
+        ImageProcessing& operator*=(Pixel); // convolução
         vector<Pixel>& operator[](int);
 };

@@ -6,7 +6,7 @@
 
 // construtores e destrutores
 // @brief: construtor padrão, gera um objeto nulo.
-ImageProcessing::ImageProcessing(){
+ImageProcessing::ImageProcessing() : pixels(0) {
     this->path = "";
     this->altura = 0;
     this->largura = 0;
@@ -55,9 +55,15 @@ ImageProcessing::ImageProcessing(Pixel std_value, int largura, int altura){
     this->altura = altura;
 
     for(int i = 0; i < this->altura; i++){
+        // aloca uma nova linha
+        vector<Pixel *> *linha = new vector<Pixel *>(); 
         for(int j = 0; j < this->largura; j++){
-            this->pixels.push_back(new Pixel(std_value));
+            // aloca os pixels na linha
+            Pixel *_pixel = new Pixel(std_value);
+            linha->push_back(_pixel);
         }
+        // adiciona a linha no vetor de pixels
+        this->pixels.push_back(*linha);
     }
 
     this->MagickImage = Image(Geometry(this->largura, this->altura), ColorRGB(std_value.getRed(), std_value.getGreen(), std_value.getBlue()));
@@ -84,52 +90,61 @@ ImageProcessing::ImageProcessing(int largura, int altura, string modo){
 
     if(modo == "random"){
         for(int i = 0; i < this->altura; i++){
+            vector<Pixel *> *linha = new vector<Pixel *>();
             for(int j = 0; j < this->largura; j++){
                 r = rand() % 255;
                 g = rand() % 255;
                 b = rand() % 255;
-                this->pixels.push_back(new Pixel(r, g, b));
+                linha->push_back(new Pixel(r, g, b));
             }
+            this->pixels.push_back(*linha);
         }
     }
     else if(modo == "fractal"){
         for(int i = 0; i < this->altura; i++){
+            vector<Pixel *> *linha = new vector<Pixel *>();
             for(int j = 0; j < this->largura; j++){
                 r = (i * j) % 255;
                 g = (i * j) % 255;
                 b = (i * j) % 255;
-
-                this->pixels.push_back(new Pixel(r, g, b));
+                linha->push_back(new Pixel(r, g, b));
             }
+            this->pixels.push_back(*linha);
         }
     }
     else if(modo == "black"){
         for(int i = 0; i < this->altura; i++){
+            vector<Pixel *> *linha = new vector<Pixel *>();
             for(int j = 0; j < this->largura; j++){
-                this->pixels.push_back(new Pixel(0, 0, 0));
+                linha->push_back(new Pixel(0, 0, 0));
             }
+            this->pixels.push_back(*linha);
         }
     }
     else if(modo == "white"){
         for(int i = 0; i < this->altura; i++){
+            vector<Pixel *> *linha = new vector<Pixel *>();
             for(int j = 0; j < this->largura; j++){
-                this->pixels.push_back(new Pixel(255, 255, 255));
+                linha->push_back(new Pixel(255, 255, 255));
             }
+            this->pixels.push_back(*linha);
         }
     }
 
     this->MagickImage = Image(Geometry(this->largura, this->altura), ColorRGB(0, 0, 0));
     for(int i = 0; i < this->altura; i++){
         for(int j = 0; j < this->largura; j++){
-            this->MagickImage.pixelColor(j, i, ColorRGB(this->pixels[i * this->largura + j]->getRed(), this->pixels[i * this->largura + j]->getGreen(), this->pixels[i * this->largura + j]->getBlue()));
+            this->MagickImage.pixelColor(j, i, ColorRGB(this->pixels[i][j]->getRed(), this->pixels[i][j]->getGreen(), this->pixels[i][j]->getBlue()));
         }
     }
 }
 
 // @brief: destrutor
 ImageProcessing::~ImageProcessing(){    
-    for(auto pixel : pixels){
-        delete pixel;
+    for(auto linha : this->pixels){
+        for(auto pixel : linha){
+            delete pixel;
+        }
     }
 }
 
@@ -150,8 +165,10 @@ int ImageProcessing::getLargura(){
 }
 
 void ImageProcessing::getPixels(){
-    for(auto pixel : this->pixels){
-        cout << pixel->getRed() << " " << pixel->getGreen() << " " << pixel->getBlue() << endl;
+    for(auto linha : this->pixels){
+        for(auto pixel : linha){
+            cout << pixel->getRed() << " " << pixel->getGreen() << " " << pixel->getBlue() << endl;
+        }
     }
 }
 
@@ -227,14 +244,19 @@ int ImageProcessing::ppmToVector(){
     }
 
     int r, g, b;
-    while(!ppm_image.eof()){
-        ppm_image >> r >> g >> b;
-
-        Pixel *pixel = new Pixel();
-        pixel->setRed(r);
-        pixel->setGreen(g);
-        pixel->setBlue(b);
-        this->pixels.push_back(pixel);
+    for(int i = 0; i < _altura; i ++){
+        vector<Pixel *> *linha = new vector<Pixel *>();
+        for(int j = 0; j < _largura; j++){
+            if(!ppm_image.eof()){
+                ppm_image >> r >> g >> b;
+                linha->push_back(new Pixel(r, g, b));
+            }
+            else{
+                delete linha;
+                break;
+            }
+        }
+        this->pixels.push_back(*linha);
     }
 
     ppm_image.close();
