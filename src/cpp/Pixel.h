@@ -7,12 +7,12 @@ using namespace std;
 class Pixel {
     private:
         int red, green, blue;
-        int opacity;
+        float opacity;
     
     public:
         // construtores e destrutores
         Pixel();
-        Pixel(int, int, int, int = 0);
+        Pixel(int, int, int, float = 0.0);
         Pixel(Pixel &);
         ~Pixel();
 
@@ -20,18 +20,18 @@ class Pixel {
         int getRed();
         int getGreen();
         int getBlue();
-        int getOpacity();
+        float getOpacity();
         void setRed(int);
         void setGreen(int);
         void setBlue(int);
-        void setOpacity(int);
+        void setOpacity(float);
 
         // operadores
         // + para somar dois pixels
         // * para multiplicar um pixel por um inteiro
-        Pixel& operator+(const Pixel&);
+        Pixel& operator+(Pixel&);
         Pixel& operator+(int);
-        Pixel& operator*(const Pixel&);
+        Pixel& operator*(Pixel&);
         Pixel& operator*(int);
         int operator[](int);
 };
