@@ -5,6 +5,7 @@ ASCII_CHARS = '@%#*$&[]}{^+=-:. '
 
 # recebe uma imagem do PIL e retorna uma string com os caracteres ASCII
 def map_pixels_to_ascii(image : Image) -> str:
+    # adicionar recursão
     pixels = image.getdata()
     ascii_str = ''
 
