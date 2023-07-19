@@ -49,7 +49,7 @@ ImageProcessing::ImageProcessing(string path) {
 }
 
 // @brief: construtor que recebe um pixel padrão e as dimensões da imagem. A imagem saída será totalmente preenchida com o pixel padrão.
-ImageProcessing::ImageProcessing(Pixel std_value, int largura, int altura){
+ImageProcessing::ImageProcessing(vector<Pixel> &std_value, int largura, int altura){
     this->path = "None";
     this->largura = largura;
     this->altura = altura;
@@ -58,15 +58,20 @@ ImageProcessing::ImageProcessing(Pixel std_value, int largura, int altura){
         // aloca uma nova linha
         vector<Pixel *> *linha = new vector<Pixel *>(); 
         for(int j = 0; j < this->largura; j++){
-            // aloca os pixels na linha
-            Pixel *_pixel = new Pixel(std_value);
+            // cria os pixels com o respectivo valor da matriz de entrada
+            Pixel *_pixel = new Pixel(std_value[i*largura + j][0], std_value[i*largura + j][1], std_value[i*largura + j][2], std_value[i*largura + j][3]);
             linha->push_back(_pixel);
         }
         // adiciona a linha no vetor de pixels
         this->pixels.push_back(*linha);
     }
 
-    this->MagickImage = Image(Geometry(this->largura, this->altura), ColorRGB(std_value.getRed(), std_value.getGreen(), std_value.getBlue()));
+    this->MagickImage = Image(Geometry(this->largura, this->altura), ColorRGB(0, 0, 0));
+    for(int i = 0; i < this->altura; i++){
+        for(int j = 0; j < this->largura; j++){
+            this->MagickImage.pixelColor(j, i, ColorRGB(std_value[i*largura + j][0], std_value[i*largura + j][1], std_value[i*largura + j][2]));
+        }
+    }
 }
 
 // @brief: construtor que recebe as dimensões da imagem e um modo.
@@ -297,4 +302,28 @@ int ImageProcessing::save(string output_path){
     }
 
     return 1;
+}
+
+
+// operadores
+
+// @brief: sobrecarga do operador de soma. Soma um filtro a todos os pixels da imagem.
+ImageProcessing& ImageProcessing::operator+=(Pixel& filtro_pixel){
+
+    // to do: fazer o loop eficiente
+    for(auto linha : this->pixels){
+        for(auto pixel : linha){
+            *pixel = *pixel + filtro_pixel;
+        }
+    }
+
+    return *this;
+}
+
+// @brief: sobrecarga do operador de multiplicação. Faz a convolução de uma matriz filtro com a imagem.
+
+
+// @brief: sobrecarga do operador []. Retorna um vetor de pixels da linha especificada.
+vector<Pixel *>& ImageProcessing::operator[](int index){
+    return this->pixels[index];
 }

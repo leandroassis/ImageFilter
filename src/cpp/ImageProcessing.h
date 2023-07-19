@@ -26,7 +26,7 @@ class ImageProcessing {
         // construtores e destrutores
         ImageProcessing();
         ImageProcessing(string);
-        ImageProcessing(Pixel, int, int);
+        ImageProcessing(vector<Pixel> &, int, int);
         ImageProcessing(int, int, string = "random");
         ~ImageProcessing();
 
@@ -54,10 +54,7 @@ class ImageProcessing {
         int save(string = NULL);
 
         // operadores
-        // += e *= para aplicar convolução e filtro
-        // [] para acessar um pixel no vetor de pixels
-        ImageProcessing& operator+=(Pixel); // filtro linear de matiz
-        ImageProcessing& operator*=(const ImageProcessing&); // convolução
-        ImageProcessing& operator*=(Pixel); // convolução
-        vector<Pixel>& operator[](int);
+        ImageProcessing& operator+=(Pixel&);
+        ImageProcessing& operator*=(vector<Pixel> &);
+        vector<Pixel *>& operator[](int);
 };
