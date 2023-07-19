@@ -47,10 +47,9 @@ class ImageProcessing {
 
         // operações com imagens das funções em c++
         int resize(int = 0, int = 0);
-        int compress();
+        int compress(size_t = 1);
         int filter(int, const ImageProcessing* = NULL);
         int grayscale();
-        int negative();
         int convert(string = NULL, string = NULL);
 
         // funções extras
@@ -65,6 +64,5 @@ class ImageProcessing {
 struct RGB {
     unsigned char r, g, b;
 };
-
 
 void eat_comment(ifstream &);

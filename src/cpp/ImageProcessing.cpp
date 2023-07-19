@@ -212,20 +212,56 @@ int ImageProcessing::resize(int new_largura, int new_altura){
     return 1;
 }
 
-int ImageProcessing::compress(){
-    return 0;
+// @brief: comprime a imagem, após isso atualiza o vetor de pixels da classe
+int ImageProcessing::compress(size_t nivel){
+
+    if(nivel > 100 || nivel <= 0){
+        cout << "Nível de compressão inválido." << endl;
+        return 0;
+    }
+
+    try{
+        this->MagickImage.quality(nivel);
+    }
+    catch(Error &error){
+        cout << "Erro ao comprimir a imagem." << endl;
+        cout << error.what() << endl;
+        return 0;
+    }
+    catch(...){
+        cout << "Erro desconhecido ao gerar a imagem." << endl;
+        return 0;
+    }
+
+    if(!this->ppmToVector()){
+        cout << "Erro ao refazer vetor de pixels da imagem comprimida." << endl;
+        return 0;
+    }
+
+    return 1;
 }
 
 int ImageProcessing::filter(int filter_type, const ImageProcessing* kernel_image){
     return 0;
 }
 
+// @brief: converte a imagem para tons de cinza e atualiza o objeto ImageMagick
 int ImageProcessing::grayscale(){
-    return 0;
-}
+    try{
+        this->MagickImage.type(GrayscaleType);
+    }
+    catch(Error &error){
+        cout << "Erro ao converter a imagem para tons de cinza." << endl;
+        cout << error.what() << endl;
+        return 0;
+    }
 
-int ImageProcessing::negative(){
-    return 0;
+    if(!this->ppmToVector()){
+        cout << "Erro ao refazer vetor de pixels da imagem em tons de cinza." << endl;
+        return 0;
+    }
+
+    return 1;
 }
 
 int ImageProcessing::convert(string output_path, string format){
@@ -262,7 +298,7 @@ int ImageProcessing::ppmToVector(){
         for(int i = 0; i < 20; i++){
             temp[i] = rand() % 26 + 97;
         }
-        this->MagickImage.write("./tmp/" + string(temp) + ".ppm");   
+        this->MagickImage.write("./tmp/" + string(temp) + ".ppm");  
     }
     catch(...){
         cout << "Erro ao converter a imagem para um arquivo ppm." << endl;
@@ -375,6 +411,7 @@ int ImageProcessing::ppmToVector(){
         return 0;
     }
 
+    cout << "Done" << endl;
     return 1;
 }
 
@@ -386,9 +423,8 @@ int ImageProcessing::vectorToArray(){
 
 // @brief: salva a imagem com o nome e o formato especificados
 int ImageProcessing::save(string output_path){
-
     try{
-        if(output_path == "" || output_path == " " || this->MagickImage == NULL) throw;
+        if(output_path == "") throw 1;
 
         this->MagickImage.write(output_path);
     }
@@ -398,7 +434,7 @@ int ImageProcessing::save(string output_path){
         return 0;
     }
     catch(...){
-        cout << "Erro ao salvar a imagem. Verifique se o formato é válido." << endl;
+        cout << "Erro ao salvar a imagem. Verifique se o path de saída foi inserido corretamente." << endl;
         return 0;
     }
 

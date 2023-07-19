@@ -1,10 +1,12 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 
 using namespace std;
 
 class Pixel {
+    friend ostream &operator<<(ostream &, const Pixel&);
     private:
         int red, green, blue;
         float opacity;

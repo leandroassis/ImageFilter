@@ -132,3 +132,9 @@ int Pixel::operator[](int indice){
     else
         return -1;
 }
+
+// @brief: sobrecarga do operador << para imprimir um pixel.
+ostream &operator<<(ostream &os, const Pixel &pixel){
+    os << "(" << pixel.red << ", " << pixel.green << ", " << pixel.blue << ", " << pixel.opacity << ")";
+    return os;
+}

@@ -9,7 +9,12 @@ int main(int argc, const char* const argv[]){
     ImageProcessing img;
 
     img = ImageProcessing("logo.ppm");
-    img.getPixels();
+    cout << *(img[11][50]) << endl;
+
+    img.grayscale();
+    img.save("logo_grayscale.png");
+
+    cout << *(img[11][50]) << endl;
 
     return 0;
 }
