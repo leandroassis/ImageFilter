@@ -102,13 +102,13 @@ Pixel& Pixel::operator+(Pixel &pixel){
     return *newPixel;
 }
 
-Pixel& Pixel::operator+(int value){
-    Pixel *newPixel = new Pixel();
-    newPixel->setRed(this->getRed() + value);
-    newPixel->setGreen(this->getGreen() + value);
-    newPixel->setBlue(this->getBlue() + value);
-    newPixel->setOpacity(this->getOpacity() + value);
-    return *newPixel;
+// @brief: soma dois pixels, alterando o valor do pixel da esquerda.
+Pixel& Pixel::operator+=(Pixel &pixel){
+    this->setRed(this->getRed() + pixel.getRed());
+    this->setGreen(this->getGreen() + pixel.getGreen());
+    this->setBlue(this->getBlue() + pixel.getBlue());
+    this->setOpacity(this->getOpacity() + pixel.getOpacity());
+    return *this;
 }
 
 Pixel& Pixel::operator*(Pixel &pixel){
@@ -117,15 +117,6 @@ Pixel& Pixel::operator*(Pixel &pixel){
     newPixel->setGreen(this->getGreen() * pixel.getGreen());
     newPixel->setBlue(this->getBlue() * pixel.getBlue());
     newPixel->setOpacity(this->getOpacity() * pixel.getOpacity());
-    return *newPixel;
-}
-
-Pixel& Pixel::operator*(int value){
-    Pixel *newPixel = new Pixel();
-    newPixel->setRed(this->getRed() * value);
-    newPixel->setGreen(this->getGreen() * value);
-    newPixel->setBlue(this->getBlue() * value);
-    newPixel->setOpacity(this->getOpacity() * value);
     return *newPixel;
 }
 

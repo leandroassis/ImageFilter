@@ -30,9 +30,8 @@ class Pixel {
         // + para somar dois pixels
         // * para multiplicar um pixel por um inteiro
         Pixel& operator+(Pixel&);
-        Pixel& operator+(int);
+        Pixel& operator+=(Pixel&);
         Pixel& operator*(Pixel&);
-        Pixel& operator*(int);
         int operator[](int);
         
 };

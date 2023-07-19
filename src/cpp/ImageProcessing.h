@@ -28,6 +28,7 @@ class ImageProcessing {
         ImageProcessing(string);
         ImageProcessing(vector<Pixel> &, int, int);
         ImageProcessing(int, int, string = "random");
+        ImageProcessing(ImageProcessing &);
         ~ImageProcessing();
 
         // getters e setters
@@ -48,13 +49,13 @@ class ImageProcessing {
         int filter(int, const ImageProcessing* = NULL);
         int grayscale();
         int negative();
-        int convert(string = NULL);
+        int convert(string = NULL, string = NULL);
 
         // funções extras
         int save(string = NULL);
 
         // operadores
         ImageProcessing& operator+=(Pixel&);
-        ImageProcessing& operator*=(vector<Pixel> &);
+        ImageProcessing& operator*(ImageProcessing&);
         vector<Pixel *>& operator[](int);
 };

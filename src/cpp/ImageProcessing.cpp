@@ -6,10 +6,8 @@
 
 // construtores e destrutores
 // @brief: construtor padrão, gera um objeto nulo.
-ImageProcessing::ImageProcessing() : pixels(0) {
-    this->path = "";
-    this->altura = 0;
-    this->largura = 0;
+ImageProcessing::ImageProcessing() : pixels(0), max_color(0), path("None"), altura(0), largura(0) {
+    // nada alocado dinamicamente
 }
 
 // @brief: construtor que recebe o caminho da imagem. Preenche os atributos da classe com as informações da imagem.
@@ -48,11 +46,16 @@ ImageProcessing::ImageProcessing(string path) {
     }
 }
 
-// @brief: construtor que recebe um pixel padrão e as dimensões da imagem. A imagem saída será totalmente preenchida com o pixel padrão.
+// @brief: construtor que recebe um vetor de pixels e as dimensões da imagem. A imagem saída será totalmente preenchida com o vetor de pixels
 ImageProcessing::ImageProcessing(vector<Pixel> &std_value, int largura, int altura){
     this->path = "None";
     this->largura = largura;
     this->altura = altura;
+
+    if(largura*altura != std_value.size()){
+        cout << "Erro durante a criação da classe ImageProcessing: dimensões da imagem e do vetor de pixels não batem." << endl;
+        return;
+    }
 
     for(int i = 0; i < this->altura; i++){
         // aloca uma nova linha
@@ -144,6 +147,16 @@ ImageProcessing::ImageProcessing(int largura, int altura, string modo){
     }
 }
 
+// @brief: construtor de cópia
+ImageProcessing::ImageProcessing(ImageProcessing &source){
+    this->path = source.path;
+    this->largura = source.largura;
+    this->altura = source.altura;
+    this->max_color = source.max_color;
+    this->pixels = source.pixels;
+    this->MagickImage = source.MagickImage;
+}
+
 // @brief: destrutor
 ImageProcessing::~ImageProcessing(){    
     for(auto linha : this->pixels){
@@ -204,7 +217,43 @@ int ImageProcessing::resize(int new_largura, int new_altura){
     return 1;
 }
 
+int ImageProcessing::compress(){
+    return 0;
+}
+
+int ImageProcessing::filter(int filter_type, const ImageProcessing* kernel_image){
+    return 0;
+}
+
+int ImageProcessing::grayscale(){
+    return 0;
+}
+
+int ImageProcessing::negative(){
+    return 0;
+}
+
+int ImageProcessing::convert(string output_path, string format){
+    return 0;
+}
+
 // operações com imagens das funções em python
+
+int ImageProcessing::mirror(bool horizontal){
+    return 0;
+}
+
+int ImageProcessing::rotate(float angle){
+    return 0;
+}
+
+int ImageProcessing::to_ASCII(){
+    return 0;
+}
+
+int ImageProcessing::to_pixel(int pixel_size){
+    return 0;
+}
 
 // funções auxiliares
 // @brief: lê um arquivo ppm e transforma em um vetor de pixels da classe
@@ -321,6 +370,29 @@ ImageProcessing& ImageProcessing::operator+=(Pixel& filtro_pixel){
 }
 
 // @brief: sobrecarga do operador de multiplicação. Faz a convolução de uma matriz filtro com a imagem.
+ImageProcessing& ImageProcessing::operator*(ImageProcessing& kernel_matrix){
+
+    // to do: fazer o loop eficiente
+    ImageProcessing *_convolved_image = new ImageProcessing;
+    for(int i = 0; i < this->altura; i++){
+        for(int j = 0; j < this->largura; j++){
+            // cria um pixel preto
+            Pixel *_pixel = new Pixel(0, 0, 0);
+            for(int k = 0; k < kernel_matrix.getAltura(); k++){
+                for(int l = 0; l < kernel_matrix.getLargura(); l++){
+                    int _pixel_x = j + l - (kernel_matrix.getLargura() / 2);
+                    int _pixel_y = i + k - (kernel_matrix.getAltura() / 2);
+                    if(_pixel_x >= 0 && _pixel_x < this->largura && _pixel_y >= 0 && _pixel_y < this->altura){
+                        *_pixel += *this->pixels[_pixel_y][_pixel_x] * *kernel_matrix[k][l];
+                    }
+                }
+            }
+            _convolved_image->pixels[i].push_back(_pixel);
+        }
+    }
+
+    return *_convolved_image;
+}
 
 
 // @brief: sobrecarga do operador []. Retorna um vetor de pixels da linha especificada.
