@@ -17,4 +17,4 @@ ImageProcessing: $(OBJ)
 	g++ -o $@ $^ $(CPPFLAGS)
 
 clean:
-	rm -rf src/*.o ./ImageProcessing
+	rm -rf src/cpp/*.o ./ImageProcessing

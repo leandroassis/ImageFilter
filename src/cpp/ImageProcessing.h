@@ -9,6 +9,8 @@
 using namespace std;
 using namespace Magick;
 
+#define DEBUG
+
 class ImageProcessing {
     private:
         string path;
@@ -44,7 +46,7 @@ class ImageProcessing {
         int to_pixel(int = 16);
 
         // operações com imagens das funções em c++
-        int resize(int = NULL, int = NULL);
+        int resize(int = 0, int = 0);
         int compress();
         int filter(int, const ImageProcessing* = NULL);
         int grayscale();
@@ -59,3 +61,10 @@ class ImageProcessing {
         ImageProcessing& operator*(ImageProcessing&);
         vector<Pixel *>& operator[](int);
 };
+
+struct RGB {
+    unsigned char r, g, b;
+};
+
+
+void eat_comment(ifstream &);

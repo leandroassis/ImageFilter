@@ -6,8 +6,7 @@
 
 // construtores e destrutores
 // @brief: construtor padrão, gera um objeto nulo.
-ImageProcessing::ImageProcessing() : pixels(0), max_color(0), path("None"), altura(0), largura(0) {
-    // nada alocado dinamicamente
+ImageProcessing::ImageProcessing() {
 }
 
 // @brief: construtor que recebe o caminho da imagem. Preenche os atributos da classe com as informações da imagem.
@@ -52,7 +51,7 @@ ImageProcessing::ImageProcessing(vector<Pixel> &std_value, int largura, int altu
     this->largura = largura;
     this->altura = altura;
 
-    if(largura*altura != std_value.size()){
+    if((unsigned) largura*altura != std_value.size()){
         cout << "Erro durante a criação da classe ImageProcessing: dimensões da imagem e do vetor de pixels não batem." << endl;
         return;
     }
@@ -158,12 +157,8 @@ ImageProcessing::ImageProcessing(ImageProcessing &source){
 }
 
 // @brief: destrutor
-ImageProcessing::~ImageProcessing(){    
-    for(auto linha : this->pixels){
-        for(auto pixel : linha){
-            delete pixel;
-        }
-    }
+ImageProcessing::~ImageProcessing(){ 
+    // to do
 }
 
 // getters
@@ -275,48 +270,105 @@ int ImageProcessing::ppmToVector(){
     }
     
     // le o arquivo ppm e constroi o vetor de pixels
-    ifstream ppm_image("./tmp/" + string(temp) + ".ppm");
+    ifstream ppm_image("./tmp/" + string(temp) + ".ppm", ios::binary);
     
     if(!ppm_image.is_open() || ppm_image.eof() || ppm_image.fail() || ppm_image.bad()){
         cout << "Erro ao abrir o arquivo ppm. Verifique se o arquivo está corrompido." << endl;
         return 0;
     }
 
+    eat_comment(ppm_image);
+    int mode;
+
     string _file_identifier;
     ppm_image >> _file_identifier;
-    if(_file_identifier != "P6"){
+    
+    if(_file_identifier != "P6" && _file_identifier != "P3"){
         cout << "Erro ao abrir o arquivo ppm. Verifique se o arquivo está corrompido." << endl;
+        ppm_image.close();
         return 0;
     }
 
+    if(_file_identifier == "P6"){
+        mode = 6;
+    } else mode = 3;
+
     int _altura, _largura;
-    ppm_image >> _largura >> _altura;
+
+    eat_comment(ppm_image);
+    ppm_image >> _largura;
+
+    eat_comment(ppm_image);
+    ppm_image >> _altura;
+
+    eat_comment(ppm_image);
     ppm_image >> this->max_color;
 
     if(_altura != this->altura || _largura != this->largura){
         cout << "Aviso: O arquivo PPM não possui as dimensões de altura e largura da imagem de entrada. Isso pode ocasionar erros." << endl;
+        this->altura = _altura;
+        this->largura = _largura;
+    }
+
+    if(max_color < 1){
+        cout << "Erro ao abrir o arquivo ppm. Número de bits não suportado." << endl;
+        ppm_image.close();
+        return 0;
+    }
+
+    if(_altura < 1 || _largura < 1){
+        cout << "Dimensões da imagem não suportadas. Verifique o arquivo por erros." << endl;
+        ppm_image.close();
+        return 0;
     }
 
     int r, g, b;
-    for(int i = 0; i < _altura; i ++){
-        vector<Pixel *> *linha = new vector<Pixel *>();
-        for(int j = 0; j < _largura; j++){
-            if(!ppm_image.eof()){
-                ppm_image >> r >> g >> b;
+
+    if(mode == 6){
+        vector<RGB> _temp_data;
+        
+        _temp_data.resize(_altura * _largura);
+        ppm_image.get();
+        ppm_image.read((char *) &_temp_data[0], _altura * _largura * 3);
+
+
+        for(int i = 0; i < _altura; i++){
+            vector<Pixel *> *linha = new vector<Pixel *>();
+            for(int j = 0; j < _largura; j++){
+                r = (int) _temp_data[i*_largura + j].r;
+                g = (int) _temp_data[i*_largura + j].g;
+                b = (int) _temp_data[i*_largura + j].b;
                 linha->push_back(new Pixel(r, g, b));
             }
-            else{
-                delete linha;
-                break;
-            }
+
+            this->pixels.push_back(*linha);
         }
-        this->pixels.push_back(*linha);
+    }else if(mode == 3){
+        for(int i = 0; i < _altura; i ++){
+            vector<Pixel *> *linha = new vector<Pixel *>();
+            for(int j = 0; j < _largura; j++){
+                if(!ppm_image.eof()){
+                    ppm_image >> r;
+                    ppm_image >> g;
+                    ppm_image >> b;
+                    r = (int) 255*r/this->max_color;
+                    g = (int) 255*g/this->max_color;
+                    b = (int) 255*b/this->max_color;
+                    linha->push_back(new Pixel(r, g, b));
+                }
+                else{
+                    delete linha;
+                    break;
+                }
+            }
+            this->pixels.push_back(*linha);
+        }
     }
 
     ppm_image.close();
 
     try{
-        remove(("./tmp/" + this->path + ".ppm").c_str());
+        remove(("./tmp/" + string(temp) + ".ppm").c_str());
     }
     catch(...){
         cout << "Erro ao remover o arquivo temporário." << endl;
@@ -398,4 +450,16 @@ ImageProcessing& ImageProcessing::operator*(ImageProcessing& kernel_matrix){
 // @brief: sobrecarga do operador []. Retorna um vetor de pixels da linha especificada.
 vector<Pixel *>& ImageProcessing::operator[](int index){
     return this->pixels[index];
+}
+
+// funções externas a classe
+
+void eat_comment(ifstream &f)
+{
+    char linebuf[1024];
+    char ppp;
+    while (ppp = f.peek(), ppp == '\n' || ppp == '\r')
+        f.get();
+    if (ppp == '#')
+        f.getline(linebuf, 1023);
 }
