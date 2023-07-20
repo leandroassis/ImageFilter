@@ -19,7 +19,7 @@ class ImageProcessing {
         Image MagickImage;
 
         vector<vector<Pixel *>> pixels;
-        // numpy_array = NULL;
+        PyObject *pList;
 
         int vectorToArray();
         int ppmToVector();
@@ -40,7 +40,7 @@ class ImageProcessing {
         void getPixels();
 
         // operações com imagens das funções em python
-        int mirror(bool = false);
+        int mirror(int = 0, string = "");
         int rotate(float);
         int to_ASCII();
         int to_pixel(int = 16);
@@ -55,7 +55,7 @@ class ImageProcessing {
         int remap(Image &);
         int negative();
         int grayscale();
-        int convert(string = NULL, string = NULL);
+        int convert(string = "", string = "");
 
         // funções extras
         int save(string = NULL);

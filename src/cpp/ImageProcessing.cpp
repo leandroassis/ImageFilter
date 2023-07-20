@@ -2,6 +2,10 @@
 #include <fstream>
 #include <ctime>
 #include <cstdlib>
+
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
+
 #include "ImageProcessing.h"
 
 // construtores e destrutores
@@ -189,8 +193,6 @@ void ImageProcessing::getPixels(){
         }
     }
 }
-
-// setters
 
 // operações com imagens em C++
 // @brief: redimensiona a imagem, após isso atualiza o vetor de pixels da classe
@@ -411,8 +413,36 @@ int ImageProcessing::negative(){
 
 // operações com imagens das funções em python
 
-int ImageProcessing::mirror(bool horizontal){
-    return 0;
+int ImageProcessing::mirror(int horizontal, string out_path){
+
+    if(horizontal != 0 && horizontal != 1){
+        cout << "Erro ao espelhar a imagem. Modo inválido." << endl;
+        return 0;
+    }
+
+    if(out_path == ""){
+        cout << "Erro ao espelhar a imagem. Imagem não possui caminho de saída." << endl;
+        return 0;
+    }
+
+    PyObject *pName, *pModule, *pFunc, *pArgs;
+    
+    pName = PyUnicode_FromString("src.python.mirrorImage");
+    pModule = PyImport_Import(pName);
+
+    if(!pModule){
+        cout << "Erro ao importar o módulo mirrorImage." << endl;
+        return 0;
+    }
+
+    pFunc = PyObject_GetAttrString(pModule, (char *)"mirror_image");
+
+    this->vectorToArray();
+
+    pArgs = PyTuple_Pack(3, pList, PyUnicode_FromString(out_path.c_str()), PyBool_FromLong(horizontal));
+    (void) PyObject_CallObject(pFunc, pArgs);
+
+    return 1;
 }
 
 int ImageProcessing::rotate(float angle){
@@ -555,7 +585,32 @@ int ImageProcessing::ppmToVector(){
 
 // @brief: transforma o vetor de pixels da classe em um numpy array
 int ImageProcessing::vectorToArray(){
-    // to do
+    try{
+        this->pList = PyList_New(this->altura);
+
+        for(int i = 0; i < this->altura; i++){
+            PyObject *pList2 = PyList_New(this->largura);
+            for(int j = 0; j < this->largura; j++){
+                PyObject *pList3 = PyList_New(3);
+                // corrigir
+                PyList_SetItem(pList3, 0, PyLong_FromLong(this->pixels[i][j]->getRed()));
+                PyList_SetItem(pList3, 1, PyLong_FromLong(this->pixels[i][j]->getGreen()));
+                PyList_SetItem(pList3, 2, PyLong_FromLong(this->pixels[i][j]->getBlue()));
+                PyList_SetItem(pList2, j, pList3);
+            }
+            PyList_SetItem(this->pList, i, pList2);
+        }
+    }
+    catch(Exception &error){
+        cout << "Erro ao transformar o vetor de pixels em um python list." << endl;
+        cout << error.what() << endl;
+        return 0;
+    }
+    catch(...){
+        cout << "Erro ao transformar o vetor de pixels em um python list." << endl;
+        return 0;
+    }
+
     return 1;
 }
 
@@ -601,8 +656,7 @@ vector<Pixel *>& ImageProcessing::operator[](int index){
     return this->pixels[index];
 }
 
-// funções externas a classe
-
+// funções externas
 void eat_comment(ifstream &f)
 {
     char linebuf[1024];

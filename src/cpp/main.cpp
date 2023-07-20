@@ -1,5 +1,9 @@
 #include <iostream>
 #include <Magick++.h>
+
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
+
 #include "ImageProcessing.h"
 
 using namespace std;
@@ -7,6 +11,8 @@ using namespace Magick;
 
 int main(int argc, const char* const argv[]){
     srand(time(NULL));
+    setenv("PYTHONPATH",".",1);
+    Py_Initialize();
 
     ImageProcessing img, img2;
 
@@ -14,12 +20,12 @@ int main(int argc, const char* const argv[]){
 
     img.grayscale();
     img2 = img;
-    img2.resize(100, 100);
 
     img2.save("logo_grayscale.png");
+    
+    img.mirror(1, "horizontal.png");
 
-    img2.denoise();
-
+    Py_Finalize();
 
     return 0;
 }
