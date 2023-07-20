@@ -304,11 +304,9 @@ int ImageProcessing::convert(string output_path, string format){
 }
 
 // @brief: adiciona ruído à imagem
-//        tipos de ruído:
-//        UniformNoise, GaussianNoise, MultiplicativeGaussianNoise, ImpulseNoise, LaplacianNoise, PoissonNoise
-int ImageProcessing::noise(Magick::NoiseType noise_type){
+int ImageProcessing::noise(){
     try{
-        this->MagickImage.addNoise(noise_type);
+        this->MagickImage.addNoise(GaussianNoise);
     }
     catch(Error &error){
         cout << "Erro ao adicionar ruído à imagem." << endl;

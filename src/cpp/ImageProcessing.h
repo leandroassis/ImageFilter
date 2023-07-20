@@ -48,7 +48,7 @@ class ImageProcessing {
         // operações com imagens das funções em c++
         int resize(int = 0, int = 0);
         int compress(size_t = 1);
-        int noise(Magick::NoiseType);
+        int noise();
         int convolve(size_t, const double *);
         int blur(const double);
         int denoise();
