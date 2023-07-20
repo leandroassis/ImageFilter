@@ -1,10 +1,12 @@
 import numpy as np
 from PIL import Image
 
-def rotate_image(img_array : np.ndarray, output_path : str, angle : float, expand : bool  = True) -> int:
+def rotate_image(img_array : list, output_path : str, angle : float, expand : bool  = True) -> int:
+
+    img_array = np.array(img_array) # converte a imagem para np.array
 
     try:
-        image = Image.fromarray(img_array) # converte o np.array para imagem do PIL
+        image = Image.fromarray(img_array.astype(np.uint8)) # converte o np.array para imagem do PIL
 
         image = image.rotate(angle, expand = expand)
         image.save("./out/"+output_path) # salva a imagem modificada

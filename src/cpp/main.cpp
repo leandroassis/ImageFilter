@@ -16,14 +16,17 @@ int main(int argc, const char* const argv[]){
 
     ImageProcessing img, img2;
 
-    img = ImageProcessing("logo.ppm");
+    img = ImageProcessing("sample/logo.ppm");
 
     img.grayscale();
     img2 = img;
 
-    img2.save("logo_grayscale.png");
+    img2.save("out/logo_grayscale.png");
     
-    img.mirror(1, "horizontal.png");
+    img2.mirror(1, "horizontal.png");
+    img2.rotate(90, 1, "rotate.png");
+    img2.to_ASCII("ascii.txt");
+    img2.to_pixel("pixel.png", 4);
 
     Py_Finalize();
 

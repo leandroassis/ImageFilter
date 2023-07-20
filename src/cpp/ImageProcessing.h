@@ -41,9 +41,9 @@ class ImageProcessing {
 
         // operações com imagens das funções em python
         int mirror(int = 0, string = "");
-        int rotate(float);
-        int to_ASCII();
-        int to_pixel(int = 16);
+        int rotate(float, int = 1, string = "");
+        int to_ASCII(string = "");
+        int to_pixel(string = "", int = 16);
 
         // operações com imagens das funções em c++
         int resize(int = 0, int = 0);

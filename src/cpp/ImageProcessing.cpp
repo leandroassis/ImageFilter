@@ -26,21 +26,21 @@ ImageProcessing::ImageProcessing(string path) {
     catch (Magick::ErrorFileOpen &error) {
         cout << "Erro durante a criação da classe ImageProcessing: " << error.what() << endl;
         cout << "Verifique se o caminho da imagem está correto." << endl;
-        return;
+        exit(1);
     }
     catch (Magick::ErrorCorruptImage &error){
         cout << "Erro durante a criação da classe ImageProcessing: " << error.what() << endl;
         cout << "Verifique se a imagem está corrompida." << endl;
-        return;
+        exit(1);
     }
     catch (Magick::ErrorMissingDelegate &error){
         cout << "Erro durante a criação da classe ImageProcessing: " << error.what() << endl;
         cout << "Verifique se o formato da imagem é suportado." << endl;
-        return;
+        exit(1);
     }
     catch (...){
         cout << "Erro desconhecido durante a criação da classe ImageProcessing." << endl;
-        return;
+        exit(1);
     }
 
     // pega os atributos da imagem de entrada
@@ -167,7 +167,7 @@ ImageProcessing::ImageProcessing(ImageProcessing &source){
 
 // @brief: destrutor
 ImageProcessing::~ImageProcessing(){ 
-    // to do
+
 }
 
 // getters
@@ -252,6 +252,7 @@ int ImageProcessing::compress(size_t nivel){
 int ImageProcessing::grayscale(){
     try{
         this->MagickImage.type(Magick::GrayscaleType);
+        // mudar para grayscale manualmente
     }
     catch(Error &error){
         cout << "Erro ao converter a imagem para tons de cinza." << endl;
@@ -413,6 +414,7 @@ int ImageProcessing::negative(){
 
 // operações com imagens das funções em python
 
+// @brief: espelha a imagem horizontalmente ou verticalmente
 int ImageProcessing::mirror(int horizontal, string out_path){
 
     if(horizontal != 0 && horizontal != 1){
@@ -425,7 +427,7 @@ int ImageProcessing::mirror(int horizontal, string out_path){
         return 0;
     }
 
-    PyObject *pName, *pModule, *pFunc, *pArgs;
+    PyObject *pName, *pModule, *pFunc, *pArgs, *pCall;
     
     pName = PyUnicode_FromString("src.python.mirrorImage");
     pModule = PyImport_Import(pName);
@@ -440,21 +442,102 @@ int ImageProcessing::mirror(int horizontal, string out_path){
     this->vectorToArray();
 
     pArgs = PyTuple_Pack(3, pList, PyUnicode_FromString(out_path.c_str()), PyBool_FromLong(horizontal));
-    (void) PyObject_CallObject(pFunc, pArgs);
+    pCall = PyObject_CallObject(pFunc, pArgs);
 
-    return 1;
+    return PyLong_AsLong(pCall);
 }
 
-int ImageProcessing::rotate(float angle){
-    return 0;
+// @brief: rotaciona a imagem em um ângulo especificado
+int ImageProcessing::rotate(float angle, int expand, string out_path){
+
+    if(angle > 360 || angle < -360){
+        cout << "Erro ao rotacionar a imagem. Ângulo inválido." << endl;
+        return 0;
+    }
+
+    if(out_path == ""){
+        cout << "Erro ao espelhar a imagem. Imagem não possui caminho de saída." << endl;
+        return 0;
+    }
+
+    PyObject *pName, *pModule, *pFunc, *pArgs, *pCall;
+    
+    pName = PyUnicode_FromString("src.python.rotateImage");
+    pModule = PyImport_Import(pName);
+
+    if(!pModule){
+        cout << "Erro ao importar o módulo rotateImage." << endl;
+        return 0;
+    }
+
+    pFunc = PyObject_GetAttrString(pModule, (char *)"rotate_image");
+
+    this->vectorToArray();
+
+    pArgs = PyTuple_Pack(4, pList, PyUnicode_FromString(out_path.c_str()), PyFloat_FromDouble((double) angle), PyBool_FromLong(expand));
+    pCall = PyObject_CallObject(pFunc, pArgs);
+
+    return PyLong_AsLong(pCall);
 }
 
-int ImageProcessing::to_ASCII(){
-    return 0;
+// @brief: converte a imagem para ASCII e salva no path especificado
+int ImageProcessing::to_ASCII(string out_path){
+    
+    if(out_path == ""){
+        cout << "Erro ao converter a imagem para ASCII. Imagem não possui caminho de saída." << endl;
+        return 0;
+    }
+
+    PyObject *pName, *pModule, *pFunc, *pArgs, *pCall;
+    
+    pName = PyUnicode_FromString("src.python.pixelsToASCII");
+    pModule = PyImport_Import(pName);
+
+    if(!pModule){
+        cout << "Erro ao importar o módulo pixelsToASCII." << endl;
+        return 0;
+    }
+
+    pFunc = PyObject_GetAttrString(pModule, (char *)"convert_image_to_ascii");
+
+    this->vectorToArray();
+
+    pArgs = PyTuple_Pack(2, pList, PyUnicode_FromString(out_path.c_str()));
+    pCall = PyObject_CallObject(pFunc, pArgs);
+
+    return PyLong_AsLong(pCall);
 }
 
-int ImageProcessing::to_pixel(int pixel_size){
-    return 0;
+// @brief: converte a imagem para um numpy array
+int ImageProcessing::to_pixel(string out_path, int pixel_size){
+    if(pixel_size <= 0 || pixel_size > this->altura*this->largura){
+        cout << "Erro ao converter a imagem para pixel. Tamanho do pixel inválido." << endl;
+        return 0;
+    }
+
+    if(out_path == ""){
+        cout << "Erro ao converter a imagem para pixel. Imagem não possui caminho de saída." << endl;
+        return 0;
+    }
+
+    PyObject *pName, *pModule, *pFunc, *pArgs, *pCall;
+    
+    pName = PyUnicode_FromString("src.python.pixelsTo8bit");
+    pModule = PyImport_Import(pName);
+
+    if(!pModule){
+        cout << "Erro ao importar o módulo pixelsTo8bit." << endl;
+        return 0;
+    }
+
+    pFunc = PyObject_GetAttrString(pModule, (char *)"convert_to_8bit_art");
+
+    this->vectorToArray();
+
+    pArgs = PyTuple_Pack(3, pList, PyUnicode_FromString(out_path.c_str()), PyLong_FromLong(pixel_size));
+    pCall = PyObject_CallObject(pFunc, pArgs);
+
+    return PyLong_AsLong(pCall);
 }
 
 // funções auxiliares
@@ -592,7 +675,6 @@ int ImageProcessing::vectorToArray(){
             PyObject *pList2 = PyList_New(this->largura);
             for(int j = 0; j < this->largura; j++){
                 PyObject *pList3 = PyList_New(3);
-                // corrigir
                 PyList_SetItem(pList3, 0, PyLong_FromLong(this->pixels[i][j]->getRed()));
                 PyList_SetItem(pList3, 1, PyLong_FromLong(this->pixels[i][j]->getGreen()));
                 PyList_SetItem(pList3, 2, PyLong_FromLong(this->pixels[i][j]->getBlue()));

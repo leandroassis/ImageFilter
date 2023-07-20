@@ -1,10 +1,12 @@
 import numpy as np
 from PIL import Image
 
-def convert_to_8bit_art(img_array : np.ndarray, output_path : str, pixel_size : int = 16) -> int:
+def convert_to_8bit_art(img_array : list, output_path : str, pixel_size : int = 16) -> int:
+
+    img_array = np.array(img_array)
 
     try:
-        image = Image.fromarray(img_array) # converte o np.array para imagem do PIL
+        image = Image.fromarray(img_array.astype(np.uint8)) # converte o np.array para imagem do PIL
 
         image = image.resize(
             (image.size[0] // pixel_size, image.size[1] // pixel_size),

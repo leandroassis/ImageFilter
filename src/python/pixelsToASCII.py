@@ -15,9 +15,11 @@ def map_pixels_to_ascii(image : Image) -> str:
     return ascii_str
 
 # recebe uma imagem como np.array e converte para ascii, salvando no arquivo apontado pelo path
-def convert_image_to_ascii(image : np.ndarray, output_path : str) -> int:
+def convert_image_to_ascii(image : list, output_path : str) -> int:
+    image = np.array(image)
+
     try:
-        pil_image = Image.fromarray(image) # converte o np.array para imagem do PIL
+        pil_image = Image.fromarray(image.astype(np.uint8)) # converte o np.array para imagem do PIL
 
         ascii_str = map_pixels_to_ascii(pil_image) # converte a imagem para ascii
         
