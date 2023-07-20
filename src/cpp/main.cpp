@@ -19,16 +19,17 @@ int main(int argc, char *argv[]){
     bool mirror, rotate, to_ASCII, to_pixel, resize, compress, noise, convolve, blur, denoise, remap, negative, grayscale, convert, save;
     mirror = rotate = to_ASCII = to_pixel = resize = compress = noise = convolve = blur = denoise = remap = negative = grayscale = convert = save = false;
 
-    string path, output, format, convolve_kernel;
+    string path(""), output, format, convolve_kernel;
     int altura, largura, hor_vert, num_pixels;
     size_t compress_lvl, convolve_kernel_size;
     float rotate_angle;
     double blur_radius;
 
     Image imagem_remap;
+    ImageProcessing IPKit;
 
     if(argc < 2){
-        cout << "Uso: " << argv[0] << " <caminho-da-imagem> [options]" << endl;
+        cout << "Uso: " << argv[0] << " -i <caminho-da-imagem> [options]" << endl;
         return 1;
     }
 
@@ -175,6 +176,36 @@ int main(int argc, char *argv[]){
             default:
                 break;
         }
+    }
+
+    if(path != ""){
+        cout << "Abrindo imagem..." << endl;
+        IPKit = ImageProcessing(path); // cria objeto de processamento de imagem
+        cout << "Imagem aberta com sucesso." << endl;
+    }
+
+    // funções do python
+    if(mirror){
+        if(!save){
+            cout << "Para aplicar espelhamento, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
+            return 1;
+        }
+        cout << "Aplicando espelhamento..." << endl;
+        if(IPKit.mirror(hor_vert, output)) cout << "Erro ao aplicar espelhamento." << endl;
+        else cout << "Espelhamento aplicado com sucesso." << endl;
+    }
+
+    if(rotate){
+        cout << "Aplicando rotação..." << endl;
+        if(IPKit.rotate(rotate_angle, output)) cout << "Erro ao aplicar rotação." << endl;
+        else cout << "Rotação aplicada com sucesso." << endl;
+    }
+
+    // funções do C++
+
+    if(save){
+        if(!IPKit.save(output)) cout << "Erro ao salvar imagem." << endl;
+        else cout << "Imagem salva com sucesso." << endl;
     }
 
     Py_Finalize();

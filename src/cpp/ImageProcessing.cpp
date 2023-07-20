@@ -50,7 +50,7 @@ ImageProcessing::ImageProcessing(string path) {
     // le todos os pixels da imagem e constroi o vetor de pixels
     if(!this->ppmToVector()){
         cout << "Erro ao gerar vetor de pixels da imagem." << endl;
-        return;
+        exit(1);
     }
 }
 
