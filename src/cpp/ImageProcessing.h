@@ -48,7 +48,12 @@ class ImageProcessing {
         // operações com imagens das funções em c++
         int resize(int = 0, int = 0);
         int compress(size_t = 1);
-        int filter(int, const ImageProcessing* = NULL);
+        int noise(Magick::NoiseType);
+        int convolve(size_t, const double *);
+        int blur(const double);
+        int denoise();
+        int remap(Image &);
+        int negative();
         int grayscale();
         int convert(string = NULL, string = NULL);
 
@@ -57,7 +62,6 @@ class ImageProcessing {
 
         // operadores
         ImageProcessing& operator+=(Pixel&);
-        ImageProcessing& operator*(ImageProcessing&);
         vector<Pixel *>& operator[](int);
 };
 

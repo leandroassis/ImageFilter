@@ -6,15 +6,20 @@ using namespace std;
 using namespace Magick;
 
 int main(int argc, const char* const argv[]){
-    ImageProcessing img;
+    srand(time(NULL));
+
+    ImageProcessing img, img2;
 
     img = ImageProcessing("logo.ppm");
-    cout << *(img[11][50]) << endl;
 
     img.grayscale();
-    img.save("logo_grayscale.png");
+    img2 = img;
+    img2.resize(100, 100);
 
-    cout << *(img[11][50]) << endl;
+    img2.save("logo_grayscale.png");
+
+    img2.denoise();
+
 
     return 0;
 }

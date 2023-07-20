@@ -37,3 +37,4 @@ sudo make check```
 ### Referências Bibliográficas
 
 [ImageMagick++ library introduction](https://imagemagick.org/Magick++/tutorial/Magick++_tutorial.pdf)
+[Magick++ API docs](https://www.imagemagick.org/Magick++/Image++.html)

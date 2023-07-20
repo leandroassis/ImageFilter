@@ -29,6 +29,11 @@ ImageProcessing::ImageProcessing(string path) {
         cout << "Verifique se a imagem está corrompida." << endl;
         return;
     }
+    catch (Magick::ErrorMissingDelegate &error){
+        cout << "Erro durante a criação da classe ImageProcessing: " << error.what() << endl;
+        cout << "Verifique se o formato da imagem é suportado." << endl;
+        return;
+    }
     catch (...){
         cout << "Erro desconhecido durante a criação da classe ImageProcessing." << endl;
         return;
@@ -241,14 +246,10 @@ int ImageProcessing::compress(size_t nivel){
     return 1;
 }
 
-int ImageProcessing::filter(int filter_type, const ImageProcessing* kernel_image){
-    return 0;
-}
-
 // @brief: converte a imagem para tons de cinza e atualiza o objeto ImageMagick
 int ImageProcessing::grayscale(){
     try{
-        this->MagickImage.type(GrayscaleType);
+        this->MagickImage.type(Magick::GrayscaleType);
     }
     catch(Error &error){
         cout << "Erro ao converter a imagem para tons de cinza." << endl;
@@ -264,8 +265,148 @@ int ImageProcessing::grayscale(){
     return 1;
 }
 
+// @brief: converte a imagem para um outro formato e salva no path especificado
 int ImageProcessing::convert(string output_path, string format){
-    return 0;
+    if(format != "jpg" && format != "png" && format != "bmp" && format != "tiff" && format != "gif" && format != "ppm"){
+        cout << "Tentando converter imagem para formato inválido." << endl;
+        return 0;
+    }
+
+    if(output_path == ""){
+        cout << "Tentando converter imagem para path de saída inválido." << endl;
+        return 0;
+    }
+
+    // se a extensão (últimos format.size() dígitos) não for igual a format, retorna erro
+    if(output_path.substr(output_path.size() - format.size()).find(format) != std::string::npos){
+        cout << "A extensão do arquivo de saída não é compatível com o tipo de arquivo escolhido para conversão." << endl;
+        return 0;
+    }
+
+    try{
+        this->MagickImage.write(output_path);
+    }
+    catch(ErrorMissingDelegate &error){
+        cout << "Erro ao converter a imagem." << endl;
+        cout << error.what() << endl;
+        return 0;
+    }
+    catch(...){
+        cout << "Erro desconhecido ao converter a imagem." << endl;
+        return 0;
+    }
+
+
+    return 1;
+}
+
+// @brief: adiciona ruído à imagem
+//        tipos de ruído:
+//        UniformNoise, GaussianNoise, MultiplicativeGaussianNoise, ImpulseNoise, LaplacianNoise, PoissonNoise
+int ImageProcessing::noise(Magick::NoiseType noise_type){
+    try{
+        this->MagickImage.addNoise(noise_type);
+    }
+    catch(Error &error){
+        cout << "Erro ao adicionar ruído à imagem." << endl;
+        cout << error.what() << endl;
+        return 0;
+    }
+    catch(...){
+        cout << "Erro desconhecido ao adicionar ruído à imagem." << endl;
+        return 0;
+    }
+
+    return 1;
+}
+
+// @brief: aplica um filtro de convolução à imagem
+int ImageProcessing::convolve(size_t dim, const double *kernel){
+    try{
+        this->MagickImage.convolve(dim, kernel);
+    }
+    catch(Error &error){
+        cout << "Erro ao convoluir a imagem." << endl;
+        cout << error.what() << endl;
+        return 0;
+    }
+    catch(...){
+        cout << "Erro desconhecido ao convoluir a imagem." << endl;
+        return 0;
+    }
+
+    return 1;
+}
+
+// @brief: aplica um filtro de blur gaussiano à imagem usando o desvio padrão especificado e um kernel de 3x3
+int ImageProcessing::blur(const double std){
+    try{
+        this->MagickImage.gaussianBlur(1, std);
+    }
+    catch(Error &error){
+        cout << "Erro ao borrar a imagem." << endl;
+        cout << error.what() << endl;
+        return 0;
+    }
+    catch(...){
+        cout << "Erro desconhecido ao borrar a imagem." << endl;
+        return 0;
+    }
+
+    return 1;
+}
+
+// @brief: aplica um filtro de redução de ruído à imagem
+int ImageProcessing::denoise(){
+    try{
+        this->MagickImage.reduceNoise();
+    }
+    catch(Error &error){
+        cout << "Erro ao reduzir ruído da imagem." << endl;
+        cout << error.what() << endl;
+        return 0;
+    }
+    catch(...){
+        cout << "Erro desconhecido ao reduzir ruído da imagem." << endl;
+        return 0;
+    }
+
+    return 1;
+}
+
+// @brief: altera as cores da imagem para o valor mais próximo na imagem especificada
+int ImageProcessing::remap(Image &sample_image){
+    try{
+        this->MagickImage.map(sample_image);
+    }
+    catch(Error &error){
+        cout << "Erro ao remapear a imagem." << endl;
+        cout << error.what() << endl;
+        return 0;
+    }
+    catch(...){
+        cout << "Erro desconhecido ao remapear a imagem." << endl;
+        return 0;
+    }
+
+    return 1;
+}
+
+int ImageProcessing::negative(){
+    try{
+        this->MagickImage.negate();
+    }
+    catch(Error &error){
+        cout << "Erro ao negativar a imagem." << endl;
+        cout << error.what() << endl;
+        return 0;
+    }
+    catch(...){
+        cout << "Erro desconhecido ao negativar a imagem." << endl;
+        return 0;
+    }
+
+    return 1;
 }
 
 // operações com imagens das funções em python
@@ -290,13 +431,12 @@ int ImageProcessing::to_pixel(int pixel_size){
 // @brief: lê um arquivo ppm e transforma em um vetor de pixels da classe
 int ImageProcessing::ppmToVector(){
 
-    srand(time(NULL));
-    char temp[20];
+    char temp[5];
 
     // converte a Magick::Image para um arquivo ppm para pegar os pixels
     try{
-        for(int i = 0; i < 20; i++){
-            temp[i] = rand() % 26 + 97;
+        for(int i = 0; i < 5; i++){
+            temp[i] = rand() % 25 + 97;
         }
         this->MagickImage.write("./tmp/" + string(temp) + ".ppm");  
     }
@@ -341,7 +481,6 @@ int ImageProcessing::ppmToVector(){
     ppm_image >> this->max_color;
 
     if(_altura != this->altura || _largura != this->largura){
-        cout << "Aviso: O arquivo PPM não possui as dimensões de altura e largura da imagem de entrada. Isso pode ocasionar erros." << endl;
         this->altura = _altura;
         this->largura = _largura;
     }
@@ -411,7 +550,6 @@ int ImageProcessing::ppmToVector(){
         return 0;
     }
 
-    cout << "Done" << endl;
     return 1;
 }
 
@@ -455,31 +593,6 @@ ImageProcessing& ImageProcessing::operator+=(Pixel& filtro_pixel){
     }
 
     return *this;
-}
-
-// @brief: sobrecarga do operador de multiplicação. Faz a convolução de uma matriz filtro com a imagem.
-ImageProcessing& ImageProcessing::operator*(ImageProcessing& kernel_matrix){
-
-    // to do: fazer o loop eficiente
-    ImageProcessing *_convolved_image = new ImageProcessing;
-    for(int i = 0; i < this->altura; i++){
-        for(int j = 0; j < this->largura; j++){
-            // cria um pixel preto
-            Pixel *_pixel = new Pixel(0, 0, 0);
-            for(int k = 0; k < kernel_matrix.getAltura(); k++){
-                for(int l = 0; l < kernel_matrix.getLargura(); l++){
-                    int _pixel_x = j + l - (kernel_matrix.getLargura() / 2);
-                    int _pixel_y = i + k - (kernel_matrix.getAltura() / 2);
-                    if(_pixel_x >= 0 && _pixel_x < this->largura && _pixel_y >= 0 && _pixel_y < this->altura){
-                        *_pixel += *this->pixels[_pixel_y][_pixel_x] * *kernel_matrix[k][l];
-                    }
-                }
-            }
-            _convolved_image->pixels[i].push_back(_pixel);
-        }
-    }
-
-    return *_convolved_image;
 }
 
 
