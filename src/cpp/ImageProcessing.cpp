@@ -398,18 +398,25 @@ int ImageProcessing::mirror(int horizontal, string out_path){
 
     PyObject *pName, *pModule, *pFunc, *pArgs, *pCall;
     
+
+    // chama o módulo mirrorImage
     pName = PyUnicode_FromString("src.python.mirrorImage");
     pModule = PyImport_Import(pName);
 
+    // verifica se o módulo foi importado corretamente
     if(!pModule){
         cout << "Erro ao importar o módulo mirrorImage." << endl;
         return 0;
     }
 
+
+    // busca a função mirror_image do módulo mirrorImage
     pFunc = PyObject_GetAttrString(pModule, (char *)"mirror_image");
 
+    // transforma o vetor de pixels da classe em um numpy array
     this->vectorToArray();
 
+    // chama a função mirror_image do módulo mirrorImage
     pArgs = PyTuple_Pack(3, pList, PyUnicode_FromString(out_path.c_str()), PyBool_FromLong(horizontal));
     pCall = PyObject_CallObject(pFunc, pArgs);
 

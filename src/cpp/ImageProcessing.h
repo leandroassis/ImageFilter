@@ -9,8 +9,6 @@
 using namespace std;
 using namespace Magick;
 
-#define DEBUG
-
 class ImageProcessing {
     private:
         string path;

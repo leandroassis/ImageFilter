@@ -18,6 +18,10 @@ def map_pixels_to_ascii(image : Image) -> str:
 def convert_image_to_ascii(image : list, output_path : str) -> int:
     image = np.array(image)
 
+    if(output_path.split('.')[-1] != 'txt'):
+        print('Erro: o arquivo de saída deve ser um arquivo de texto (.txt).')
+        return 0
+
     try:
         pil_image = Image.fromarray(image.astype(np.uint8)) # converte o np.array para imagem do PIL
 
