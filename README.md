@@ -41,23 +41,23 @@ O programa foi projetado para ser executado através de linha de comando. As int
 
 As funções e respectivos argumentos são:
 
-|short option|Requisitos|Operação| \
-|-m| 1 (horizontal) ou 0 (vertical) e -s |Espelha a imagem | \
-|-r| ângulo -s |Rotaciona a imagem em `ângulo` graus | \
-|-s| path de saída | Caminho para salvar a imagem de saída |
-|-c| formato -s | Converte a imagem para outro formato |
-|-g| None | Converte a imagem para escala de cinza |
-|-n| None | Converte a imagem para negativo |
-|-i| path de entrada | Caminho da imagem de entrada |
-|-d| None | Remove ruído da imagem usando um filtro gaussiano |
-|-b| raio do blur = 1 (opcional) | Adiciona blur na imagem |
-|-l| None | Adiciona ruído gaussiano a imagem |
-|-u| -w largura -h altura | Redimensiona a imagem |
-|-w| largura | Configura a largura para o redimensionamento |
-|-h| altura | Configura a altura para o redimensionamento |
-|-p| nº de pixels = 16 -s | Transforma a imagem em pixel art |
-|-a|-s | Transforma a imagem em ASCII art e salva em um arquivo `.txt` |
-|-e| nível de compressão | Comprime a imagem reduzindo sua qualidade |
+| short option | Requisitos | Operação |
+| -m | 1 (horizontal) ou 0 (vertical) e -s | Espelha a imagem |
+| -r | ângulo -s | Rotaciona a imagem em `ângulo` graus |
+| -s | path de saída | Caminho para salvar a imagem de saída |
+| -c | formato -s | Converte a imagem para outro formato |
+| -g | None | Converte a imagem para escala de cinza |
+| -n | None | Converte a imagem para negativo |
+| -i | path de entrada | Caminho da imagem de entrada |
+| -d | None | Remove ruído da imagem usando um filtro gaussiano |
+| -b | raio do blur = 1 (opcional) | Adiciona blur na imagem |
+| -l | None | Adiciona ruído gaussiano a imagem |
+| -u | -w largura -h altura | Redimensiona a imagem |
+| -w | largura | Configura a largura para o redimensionamento |
+| -h | altura | Configura a altura para o redimensionamento |
+| -p | nº de pixels = 16 -s | Transforma a imagem em pixel art |
+| -a |-s | Transforma a imagem em ASCII art e salva em um arquivo `.txt` |
+| -e | nível de compressão | Comprime a imagem reduzindo sua qualidade |
 
 ### Referências Bibliográficas
 
