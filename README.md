@@ -42,6 +42,7 @@ O programa foi projetado para ser executado através de linha de comando. As int
 As funções e respectivos argumentos são:
 
 | short option | Requisitos | Operação |
+| ------------ | --------------- | ----------------------------- |
 | -m | 1 (horizontal) ou 0 (vertical) e -s | Espelha a imagem |
 | -r | ângulo -s | Rotaciona a imagem em `ângulo` graus |
 | -s | path de saída | Caminho para salvar a imagem de saída |
