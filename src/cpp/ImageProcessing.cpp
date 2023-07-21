@@ -21,7 +21,14 @@ ImageProcessing::ImageProcessing(string path) {
     
     // tenta abrir a imagem
     try{
+        ifstream _tempfile(this->path);
+        if(!_tempfile){
+            cout << "Erro durante a criação da classe ImageProcessing: caminho da imagem inválido." << endl;
+            exit(1);
+        }
+        
         this->MagickImage.read(this->path);
+        _tempfile.close();
     } 
     catch (Magick::ErrorFileOpen &error) {
         cout << "Erro durante a criação da classe ImageProcessing: " << error.what() << endl;

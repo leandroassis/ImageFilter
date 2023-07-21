@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
     mirror = rotate = to_ASCII = to_pixel = resize = compress = noise = convolve = blur = denoise = remap = negative = grayscale = convert = save = false;
 
     string path(""), output, format, convolve_kernel;
-    int altura, largura, hor_vert, num_pixels;
+    int altura = 0, largura = 0, hor_vert, num_pixels;
     size_t compress_lvl, convolve_kernel_size;
     float rotate_angle;
     double blur_radius;
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]){
     // -l noise
     // -i inpath
     // -u (resize) precisa passar altura -h e largura -w
-    while((c = getopt(argc, argv, "m:r:s:f:gnkj:i:db:lc:w:h:upav:e:")) != -1){
+    while((c = getopt(argc, argv, "m:r:s:f:gnkj:i:db:lc:w:h:up:av:e:")) != -1){
         switch(c){
             case 'm':
                 mirror = true;
@@ -125,7 +125,6 @@ int main(int argc, char *argv[]){
                 resize = true;
                 break;
             case 'w':
-                resize = true;
                 try{
                     largura = stoi(optarg);
                 } catch(...){
@@ -143,6 +142,12 @@ int main(int argc, char *argv[]){
                 break;
             case 'p':
                 to_pixel = true;
+                try{
+                    num_pixels = stoi(optarg);
+                } catch(...){
+                    cout << "Erro ao ler número de pixels para conversão. O valor será setado ao padrão 16." << endl;
+                    num_pixels = 16;
+                }
                 break;
             case 'a':
                 to_ASCII = true;
@@ -169,8 +174,8 @@ int main(int argc, char *argv[]){
                 try{
                     compress_lvl = (size_t) stoi(optarg);
                 } catch(...){
-                    cout << "Erro ao ler nível de compressão. O valor será setado ao padrão 1." << endl;
-                    compress_lvl = 1;
+                    cout << "Erro ao ler nível de compressão. O valor será setado ao padrão 50." << endl;
+                    compress_lvl = 50;
                 }
                 break;
             default:
@@ -183,6 +188,10 @@ int main(int argc, char *argv[]){
         IPKit = ImageProcessing(path); // cria objeto de processamento de imagem
         cout << "Imagem aberta com sucesso." << endl;
     }
+    else{
+        cout << "Para converter imagem, é necessário passar o caminho da imagem. Utilize -i <caminho-da-imagem>. O programa será encerrado." << endl;
+        return 1;
+    }
 
     // funções do python
     if(mirror){
@@ -191,17 +200,78 @@ int main(int argc, char *argv[]){
             return 1;
         }
         cout << "Aplicando espelhamento..." << endl;
-        if(IPKit.mirror(hor_vert, output)) cout << "Erro ao aplicar espelhamento." << endl;
+        if(!IPKit.mirror(hor_vert, output)) cout << "Erro ao aplicar espelhamento." << endl;
         else cout << "Espelhamento aplicado com sucesso." << endl;
     }
 
     if(rotate){
+        if(!save){
+            cout << "Para aplicar rotação, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
+            return 1;
+        }
         cout << "Aplicando rotação..." << endl;
-        if(IPKit.rotate(rotate_angle, output)) cout << "Erro ao aplicar rotação." << endl;
+        if(!IPKit.rotate(rotate_angle, 1, output)) cout << "Erro ao aplicar rotação." << endl;
         else cout << "Rotação aplicada com sucesso." << endl;
     }
 
+    if(to_ASCII){
+        if(!save){
+            cout << "Para converter para ASCII, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
+            return 1;
+        }
+        cout << "Convertendo para ASCII..." << endl;
+        if(!IPKit.to_ASCII(output)) cout << "Erro ao converter para ASCII." << endl;
+        else cout << "Conversão para ASCII realizada com sucesso." << endl;
+    }
+
+    if(to_pixel){
+        if(!save){
+            cout << "Para converter para pixel art, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
+            return 1;
+        }
+        cout << "Convertendo para pixel..." << endl;
+        if(!IPKit.to_pixel(output, num_pixels)) cout << "Erro ao converter para pixel." << endl;
+        else cout << "Conversão para pixel realizada com sucesso." << endl;
+    }
+
     // funções do C++
+
+    if(resize){
+        if(largura == 0 || altura == 0){
+            cout << "Para redimensionar a imagem, é necessário passar altura e largura. Utilize -h <altura> e -w <largura>. O programa será encerrado." << endl;
+            return 1;
+        }
+
+        cout << "Redimensionando imagem..." << endl;
+        if(!IPKit.resize(altura, largura)) cout << "Erro ao redimensionar imagem." << endl;
+        else cout << "Imagem redimensionada com sucesso." << endl;
+    }
+
+    if(compress){
+        if(compress_lvl < 1 || compress_lvl > 100){
+            cout << "Nível de compressão deve ser um valor entre 1 e 100. O valor será setado ao padrão 50." << endl;
+            compress_lvl = 50;
+        }
+        cout << "Comprimindo imagem..." << endl;
+        if(!IPKit.compress(compress_lvl)) cout << "Erro ao comprimir imagem." << endl;
+        else cout << "Imagem comprimida com sucesso." << endl;
+    }
+
+    if(noise){
+        cout << "Aplicando ruído..." << endl;
+        if(!IPKit.noise()) cout << "Erro ao aplicar ruído." << endl;
+        else cout << "Ruído aplicado com sucesso." << endl;
+    }
+
+    if(convolve){
+        if(convolve_kernel == ""){
+            cout << "Para aplicar convolução, é necessário passar o kernel. Utilize -v <kernel>. O programa será encerrado." << endl;
+            return 1;
+        }
+        cout << "Aplicando convolução..." << endl;
+        if(!IPKit.convolve(convolve_kernel_size, convolve_kernel.c_str())) cout << "Erro ao aplicar convolução." << endl;
+        else cout << "Convolução aplicada com sucesso." << endl;
+    }
 
     if(save){
         if(!IPKit.save(output)) cout << "Erro ao salvar imagem." << endl;
