@@ -328,24 +328,6 @@ int ImageProcessing::noise(){
     return 1;
 }
 
-// @brief: aplica um filtro de convolução à imagem
-int ImageProcessing::convolve(size_t dim, const double *kernel){
-    try{
-        this->MagickImage.convolve(dim, kernel);
-    }
-    catch(Error &error){
-        cout << "Erro ao convoluir a imagem." << endl;
-        cout << error.what() << endl;
-        return 0;
-    }
-    catch(...){
-        cout << "Erro desconhecido ao convoluir a imagem." << endl;
-        return 0;
-    }
-
-    return 1;
-}
-
 // @brief: aplica um filtro de blur gaussiano à imagem usando o desvio padrão especificado e um kernel de 3x3
 int ImageProcessing::blur(const double std){
     try{
@@ -376,24 +358,6 @@ int ImageProcessing::denoise(){
     }
     catch(...){
         cout << "Erro desconhecido ao reduzir ruído da imagem." << endl;
-        return 0;
-    }
-
-    return 1;
-}
-
-// @brief: altera as cores da imagem para o valor mais próximo na imagem especificada
-int ImageProcessing::remap(Image &sample_image){
-    try{
-        this->MagickImage.map(sample_image);
-    }
-    catch(Error &error){
-        cout << "Erro ao remapear a imagem." << endl;
-        cout << error.what() << endl;
-        return 0;
-    }
-    catch(...){
-        cout << "Erro desconhecido ao remapear a imagem." << endl;
         return 0;
     }
 

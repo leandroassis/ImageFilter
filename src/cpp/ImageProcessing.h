@@ -49,10 +49,8 @@ class ImageProcessing {
         int resize(int = 0, int = 0);
         int compress(size_t = 1);
         int noise();
-        int convolve(size_t, const double *);
         int blur(const double);
         int denoise();
-        int remap(Image &);
         int negative();
         int grayscale();
         int convert(string = "", string = "");

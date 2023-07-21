@@ -5,13 +5,13 @@ def mirror_image(img_array : list, output_path : str, vertical_or_horizontal : i
     img_array = np.array(img_array)
 
     try:
-        if vertical_or_horizontal != 1 and vertical_or_horizontal != 2:
+        if vertical_or_horizontal != 1 and vertical_or_horizontal != 0:
             raise ValueError("O parâmetro vertical_or_horizontal deve ser 1 ou 2.")
         
         image = Image.fromarray(img_array.astype(np.uint8)) # converte o np.array para imagem do PIL
         image = ImageOps.mirror(image) if vertical_or_horizontal == 1 else ImageOps.flip(image)
 
-        image.save("./out/"+output_path) # salva a imagem modificada
+        image.save(output_path) # salva a imagem modificada
 
     except Exception as e:
         print(f"Erro: {e}.")

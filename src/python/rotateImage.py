@@ -9,7 +9,7 @@ def rotate_image(img_array : list, output_path : str, angle : float, expand : bo
         image = Image.fromarray(img_array.astype(np.uint8)) # converte o np.array para imagem do PIL
 
         image = image.rotate(angle, expand = expand)
-        image.save("./out/"+output_path) # salva a imagem modificada
+        image.save(output_path) # salva a imagem modificada
     except Exception as e:
         print(f"Erro: {e}.")
         print("Erro ao rotacionar a imagem.")

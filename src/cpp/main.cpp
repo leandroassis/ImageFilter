@@ -5,6 +5,7 @@
 #include <Python.h>
 
 #include <unistd.h>
+#include <fstream>
 
 #include "ImageProcessing.h"
 
@@ -16,16 +17,15 @@ int main(int argc, char *argv[]){
     setenv("PYTHONPATH",".",1);
     Py_Initialize();
 
-    bool mirror, rotate, to_ASCII, to_pixel, resize, compress, noise, convolve, blur, denoise, remap, negative, grayscale, convert, save;
-    mirror = rotate = to_ASCII = to_pixel = resize = compress = noise = convolve = blur = denoise = remap = negative = grayscale = convert = save = false;
+    bool mirror, rotate, to_ASCII, to_pixel, resize, compress, noise, blur, denoise, negative, grayscale, convert, save;
+    mirror = rotate = to_ASCII = to_pixel = resize = compress = noise = blur = denoise = negative = grayscale = convert = save = false;
 
-    string path(""), output, format, convolve_kernel;
+    string path(""), output, format("");
     int altura = 0, largura = 0, hor_vert, num_pixels;
-    size_t compress_lvl, convolve_kernel_size;
+    size_t compress_lvl;
     float rotate_angle;
     double blur_radius;
 
-    Image imagem_remap;
     ImageProcessing IPKit;
 
     if(argc < 2){
@@ -38,15 +38,13 @@ int main(int argc, char *argv[]){
     // -m 1 ou 0 (mirror)
     // -r angle (rotate)
     // -s outpath
-    // -f format
-    // -k (remap) precisa passar a imagem com -j
+    // -c format
     // -d
-    // -g -n -b
-    // -c (convolve) -v FAZER 
+    // -g -n -b 
     // -l noise
     // -i inpath
     // -u (resize) precisa passar altura -h e largura -w
-    while((c = getopt(argc, argv, "m:r:s:f:gnkj:i:db:lc:w:h:up:av:e:")) != -1){
+    while((c = getopt(argc, argv, "m:r:s:c:gni:db:lw:h:up:ae:")) != -1){
         switch(c){
             case 'm':
                 mirror = true;
@@ -76,7 +74,7 @@ int main(int argc, char *argv[]){
                 save = true;
                 output = string(optarg);
                 break;
-            case 'f':
+            case 'c':
                 convert = true;
                 format = string(optarg);
                 break;
@@ -85,18 +83,6 @@ int main(int argc, char *argv[]){
                 break;
             case 'n':
                 negative = true;
-                break;
-            case 'k':
-                remap = true;
-                break;
-            case 'j':
-                try{
-                    imagem_remap = Image(string(optarg));
-                }
-                catch(...){
-                    cout << "Erro ao abrir imagem para remap. O remap será abortado." << endl;
-                    remap = false;
-                }
                 break;
             case 'i':
                 try{
@@ -152,23 +138,6 @@ int main(int argc, char *argv[]){
             case 'a':
                 to_ASCII = true;
                 break;
-            case 'c':
-                convolve = true;
-                try{
-                    convolve_kernel_size = stoi(optarg);
-                } catch(...){
-                    cout << "Erro ao ler tamanho do kernel para convolução. A convolução será abortada." << endl;
-                    convolve = false;
-                }
-
-                if(convolve_kernel_size < 1){
-                    cout << "Matriz de kernel deve ter tamanho maior que 0. A convolução será abortada." << endl;
-                    convolve = false;
-                }
-                break;
-            case 'v':
-                convolve_kernel = string(optarg);
-                break;
             case 'e':
                 compress = true;
                 try{
@@ -178,6 +147,8 @@ int main(int argc, char *argv[]){
                     compress_lvl = 50;
                 }
                 break;
+            case '?':
+                return 1;
             default:
                 break;
         }
@@ -199,6 +170,7 @@ int main(int argc, char *argv[]){
             cout << "Para aplicar espelhamento, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
             return 1;
         }
+        save = false;
         cout << "Aplicando espelhamento..." << endl;
         if(!IPKit.mirror(hor_vert, output)) cout << "Erro ao aplicar espelhamento." << endl;
         else cout << "Espelhamento aplicado com sucesso." << endl;
@@ -209,6 +181,7 @@ int main(int argc, char *argv[]){
             cout << "Para aplicar rotação, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
             return 1;
         }
+        save = false;
         cout << "Aplicando rotação..." << endl;
         if(!IPKit.rotate(rotate_angle, 1, output)) cout << "Erro ao aplicar rotação." << endl;
         else cout << "Rotação aplicada com sucesso." << endl;
@@ -219,6 +192,7 @@ int main(int argc, char *argv[]){
             cout << "Para converter para ASCII, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
             return 1;
         }
+        save = false;
         cout << "Convertendo para ASCII..." << endl;
         if(!IPKit.to_ASCII(output)) cout << "Erro ao converter para ASCII." << endl;
         else cout << "Conversão para ASCII realizada com sucesso." << endl;
@@ -229,6 +203,7 @@ int main(int argc, char *argv[]){
             cout << "Para converter para pixel art, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
             return 1;
         }
+        save = false;
         cout << "Convertendo para pixel..." << endl;
         if(!IPKit.to_pixel(output, num_pixels)) cout << "Erro ao converter para pixel." << endl;
         else cout << "Conversão para pixel realizada com sucesso." << endl;
@@ -263,14 +238,49 @@ int main(int argc, char *argv[]){
         else cout << "Ruído aplicado com sucesso." << endl;
     }
 
-    if(convolve){
-        if(convolve_kernel == ""){
-            cout << "Para aplicar convolução, é necessário passar o kernel. Utilize -v <kernel>. O programa será encerrado." << endl;
+    if(blur){
+        if(blur_radius < 0){
+            cout << "Raio do blur deve ser um valor positivo. O valor será setado ao padrão 1." << endl;
+            blur_radius = 1.0;
+        }
+        cout << "Aplicando blur..." << endl;
+        if(!IPKit.blur(blur_radius)) cout << "Erro ao aplicar blur." << endl;
+        else cout << "Blur aplicado com sucesso." << endl;
+    }
+
+    if(denoise){
+        cout << "Removendo ruído..." << endl;
+        if(!IPKit.denoise()) cout << "Erro ao remover ruído." << endl;
+        else cout << "Ruído removido com sucesso." << endl;
+    }
+
+    if(negative){
+        cout << "Aplicando negativo..." << endl;
+        if(!IPKit.negative()) cout << "Erro ao aplicar negativo." << endl;
+        else cout << "Negativo aplicado com sucesso." << endl;
+    }
+
+    if(grayscale){
+        cout << "Aplicando escala de cinza..." << endl;
+        if(!IPKit.grayscale()) cout << "Erro ao aplicar escala de cinza." << endl;
+        else cout << "Escala de cinza aplicada com sucesso." << endl;
+    }
+
+    if(convert){
+        if(format == ""){
+            cout << "Para converter imagem, é necessário passar o formato. Utilize -f <formato (png, bmp, etc)>. O programa será encerrado." << endl;
             return 1;
         }
-        cout << "Aplicando convolução..." << endl;
-        if(!IPKit.convolve(convolve_kernel_size, convolve_kernel.c_str())) cout << "Erro ao aplicar convolução." << endl;
-        else cout << "Convolução aplicada com sucesso." << endl;
+
+        if(!save){
+            cout << "Para converter imagem, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
+            return 1;
+        }
+
+        cout << "Convertendo imagem..." << endl;
+        save = false;
+        if(!IPKit.convert(output, format)) cout << "Erro ao converter imagem." << endl;
+        else cout << "Imagem convertida com sucesso." << endl;
     }
 
     if(save){

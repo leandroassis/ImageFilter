@@ -26,7 +26,7 @@ def convert_image_to_ascii(image : list, output_path : str) -> int:
         img_width = pil_image.width # largura da imagem
         ascii_str_len = len(ascii_str) # tamanho da string ascii
         
-        with open('./out/'+output_path, 'w') as f:
+        with open(output_path, 'w') as f:
             for i in range(0, ascii_str_len, img_width):
                 f.write(ascii_str[i:i+img_width] + '\n')
     except Exception as e:

@@ -17,7 +17,7 @@ def convert_to_8bit_art(img_array : list, output_path : str, pixel_size : int = 
             Image.NEAREST
         )
 
-        image.save("./out/"+output_path) # salva a imagem modificada
+        image.save(output_path) # salva a imagem modificada
     except Exception as e:
         print(f"Erro: {e}.")
         print("Erro ao rotacionar a imagem.")
