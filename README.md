@@ -62,5 +62,5 @@ As funções e respectivos argumentos são:
 
 ### Referências Bibliográficas
 
-[ImageMagick++ library introduction](https://imagemagick.org/Magick++/tutorial/Magick++_tutorial.pdf)
-[Magick++ API docs](https://www.imagemagick.org/Magick++/Image++.html)
+#####1. [ImageMagick++ library introduction](https://imagemagick.org/Magick++/tutorial/Magick++_tutorial.pdf)
+#####2.[Magick++ API docs](https://www.imagemagick.org/Magick++/Image++.html)
