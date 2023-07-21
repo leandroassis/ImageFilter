@@ -51,7 +51,7 @@ As funções e respectivos argumentos são:
 | -n | None | Converte a imagem para negativo |
 | -i | path de entrada | Caminho da imagem de entrada |
 | -d | None | Remove ruído da imagem usando um filtro gaussiano |
-| -b | raio do blur = 1 (opcional) | Adiciona blur na imagem |
+| -b | raio do blur = 1 | Adiciona blur na imagem |
 | -l | None | Adiciona ruído gaussiano a imagem |
 | -u | -w largura -h altura | Redimensiona a imagem |
 | -w | largura | Configura a largura para o redimensionamento |
