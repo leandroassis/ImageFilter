@@ -288,8 +288,8 @@ int ImageProcessing::convert(string output_path, string format){
     }
 
     // se a extensão (últimos format.size() dígitos) não for igual a format, retorna erro
-    if(output_path.substr(output_path.size() - format.size()).find(format) != std::string::npos){
-        cout << "A extensão do arquivo de saída não é compatível com o tipo de arquivo escolhido para conversão." << endl;
+    if(output_path.substr(output_path.size() - format.size()).find(format) == std::string::npos){
+        cout << "A extensão do arquivo de saída não é compatível com o formato escolhido para conversão." << endl;
         return 0;
     }
 

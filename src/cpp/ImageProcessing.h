@@ -47,7 +47,7 @@ class ImageProcessing {
 
         // operações com imagens das funções em c++
         int resize(int = 0, int = 0);
-        int compress(size_t = 1);
+        int compress(size_t = 50);
         int noise();
         int blur(const double);
         int denoise();

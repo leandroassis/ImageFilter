@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
     mirror = rotate = to_ASCII = to_pixel = resize = compress = noise = blur = denoise = negative = grayscale = convert = save = false;
 
     string path(""), output, format("");
-    int altura = 0, largura = 0, hor_vert, num_pixels;
+    int altura = 0, largura = 0, hor_vert, num_pixels = 0;
     size_t compress_lvl;
     float rotate_angle;
     double blur_radius;
@@ -35,16 +35,7 @@ int main(int argc, char *argv[]){
 
     int c;
 
-    // -m 1 ou 0 (mirror)
-    // -r angle (rotate)
-    // -s outpath
-    // -c format
-    // -d
-    // -g -n -b 
-    // -l noise
-    // -i inpath
-    // -u (resize) precisa passar altura -h e largura -w
-    while((c = getopt(argc, argv, "m:r:s:c:gni:db:lw:h:up:ae:")) != -1){
+    while((c = getopt(argc, argv, "m:r:s:c:gni:db:lw:h:up:ae")) != -1){
         switch(c){
             case 'm':
                 mirror = true;
@@ -164,51 +155,6 @@ int main(int argc, char *argv[]){
         return 1;
     }
 
-    // funções do python
-    if(mirror){
-        if(!save){
-            cout << "Para aplicar espelhamento, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
-            return 1;
-        }
-        save = false;
-        cout << "Aplicando espelhamento..." << endl;
-        if(!IPKit.mirror(hor_vert, output)) cout << "Erro ao aplicar espelhamento." << endl;
-        else cout << "Espelhamento aplicado com sucesso." << endl;
-    }
-
-    if(rotate){
-        if(!save){
-            cout << "Para aplicar rotação, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
-            return 1;
-        }
-        save = false;
-        cout << "Aplicando rotação..." << endl;
-        if(!IPKit.rotate(rotate_angle, 1, output)) cout << "Erro ao aplicar rotação." << endl;
-        else cout << "Rotação aplicada com sucesso." << endl;
-    }
-
-    if(to_ASCII){
-        if(!save){
-            cout << "Para converter para ASCII, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
-            return 1;
-        }
-        save = false;
-        cout << "Convertendo para ASCII..." << endl;
-        if(!IPKit.to_ASCII(output)) cout << "Erro ao converter para ASCII." << endl;
-        else cout << "Conversão para ASCII realizada com sucesso." << endl;
-    }
-
-    if(to_pixel){
-        if(!save){
-            cout << "Para converter para pixel art, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
-            return 1;
-        }
-        save = false;
-        cout << "Convertendo para pixel..." << endl;
-        if(!IPKit.to_pixel(output, num_pixels)) cout << "Erro ao converter para pixel." << endl;
-        else cout << "Conversão para pixel realizada com sucesso." << endl;
-    }
-
     // funções do C++
 
     if(resize){
@@ -266,6 +212,53 @@ int main(int argc, char *argv[]){
         else cout << "Escala de cinza aplicada com sucesso." << endl;
     }
 
+
+        // funções do python
+    if(mirror){
+        if(!save){
+            cout << "Para aplicar espelhamento, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
+            return 1;
+        }
+        
+        if(!rotate && !to_pixel && !convert) save = false;
+        cout << "Aplicando espelhamento..." << endl;
+        if(!IPKit.mirror(hor_vert, output)) cout << "Erro ao aplicar espelhamento." << endl;
+        else cout << "Espelhamento aplicado com sucesso." << endl;
+    }
+
+    if(rotate){
+        if(!save){
+            cout << "Para aplicar rotação, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
+            return 1;
+        }
+        if(!to_pixel && !convert) save = false;
+        cout << "Aplicando rotação..." << endl;
+        if(!IPKit.rotate(rotate_angle, 1, output)) cout << "Erro ao aplicar rotação." << endl;
+        else cout << "Rotação aplicada com sucesso." << endl;
+    }
+
+    if(to_ASCII){
+        if(!save){
+            cout << "Para converter para ASCII, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
+            return 1;
+        }
+        save = false;
+        cout << "Convertendo para ASCII..." << endl;
+        if(!IPKit.to_ASCII(output)) cout << "Erro ao converter para ASCII." << endl;
+        else cout << "Conversão para ASCII realizada com sucesso." << endl;
+    }
+
+    if(to_pixel){
+        if(!save){
+            cout << "Para converter para pixel art, é necessário salvar a imagem. Utilize -s <path-de-saída>. O programa será encerrado." << endl;
+            return 1;
+        }
+        save = false;
+        cout << "Convertendo para pixel..." << endl;
+        if(!IPKit.to_pixel(output, num_pixels)) cout << "Erro ao converter para pixel." << endl;
+        else cout << "Conversão para pixel realizada com sucesso." << endl;
+    }
+    
     if(convert){
         if(format == ""){
             cout << "Para converter imagem, é necessário passar o formato. Utilize -f <formato (png, bmp, etc)>. O programa será encerrado." << endl;
