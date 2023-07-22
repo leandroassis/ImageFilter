@@ -325,6 +325,11 @@ int ImageProcessing::noise(){
         return 0;
     }
 
+    if(!this->ppmToVector()){
+        cout << "Erro ao refazer vetor de pixels da imagem em tons de cinza." << endl;
+        return 0;
+    }
+
     return 1;
 }
 
@@ -340,6 +345,11 @@ int ImageProcessing::blur(const double std){
     }
     catch(...){
         cout << "Erro desconhecido ao borrar a imagem." << endl;
+        return 0;
+    }
+
+    if(!this->ppmToVector()){
+        cout << "Erro ao refazer vetor de pixels da imagem em tons de cinza." << endl;
         return 0;
     }
 
@@ -361,6 +371,11 @@ int ImageProcessing::denoise(){
         return 0;
     }
 
+    if(!this->ppmToVector()){
+        cout << "Erro ao refazer vetor de pixels da imagem em tons de cinza." << endl;
+        return 0;
+    }
+
     return 1;
 }
 
@@ -375,6 +390,11 @@ int ImageProcessing::negative(){
     }
     catch(...){
         cout << "Erro desconhecido ao negativar a imagem." << endl;
+        return 0;
+    }
+
+    if(!this->ppmToVector()){
+        cout << "Erro ao refazer vetor de pixels da imagem em tons de cinza." << endl;
         return 0;
     }
 

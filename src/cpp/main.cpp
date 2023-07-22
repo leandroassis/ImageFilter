@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
 
     int c;
 
-    while((c = getopt(argc, argv, "m:r:s:c:gni:db:lw:h:up:ae")) != -1){
+    while((c = getopt(argc, argv, "m:r:s:c:gni:db:lw:h:up:ae:")) != -1){
         switch(c){
             case 'm':
                 mirror = true;
